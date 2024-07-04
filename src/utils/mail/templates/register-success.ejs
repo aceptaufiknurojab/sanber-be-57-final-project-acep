@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .header {
+        background-color: #4caf50;
+        padding: 20px;
+        text-align: center;
+        color: white;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+      .content {
+        padding: 20px;
+      }
+      .content p {
+        font-size: 16px;
+        line-height: 1.5;
+        color: #333333;
+      }
+      .footer {
+        background-color: #f4f4f4;
+        padding: 10px;
+        text-align: center;
+        font-size: 12px;
+        color: #777777;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Hello, <%= username %></h1>
+        <h1>Welocome to our services</h1>
+      </div>
+      <div class="content">
+        <p>
+          Terima kasih telah melakukan registrasi. Akun Anda telah berhasil
+          dibuat.
+        </p>
+        <p>
+          Silakan login ke akun Anda menggunakan email dan kata sandi yang telah
+          Anda daftarkan.
+        </p>
+        <p>
+          Jika Anda memiliki pertanyaan atau membutuhkan bantuan, jangan ragu
+          untuk menghubungi tim dukungan kami.
+        </p>
+        <p>Salam hangat,</p>
+        <p>Tim PT.Alim Rugi</p>
+      </div>
+      <div class="footer">
+        <p>&copy; 2024 PT.Alim Rugi. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>
