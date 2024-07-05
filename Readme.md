@@ -19,6 +19,7 @@ Link Utama https://sanber-be-57-final-project-acep-production.up.railway.app
 3. order barang
    link https://sanber-be-57-final-project-acep-production.up.railway.app/api/orders
    untuk order barang tinggal memasukan nama barag yang sudah ada di product
+   untuk Grand Total sudah automatis terhitung
    {
    "orderItems": [
    {
