@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import * as Yup from "yup";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import UserModel from "@/models/user.model";
-import { decrypt } from "@/utils/encryption";
 import { SECRET } from "@/utils/env";
 import { IReqUser } from "@/utils/interfaces";
 
@@ -92,9 +92,9 @@ export default {
         throw new Error("User not found");
       }
 
-      const decryptPassword = decrypt(SECRET, userByEmail.password);
+      const isPasswordValid = await bcrypt.compare(password, userByEmail.password);
 
-      if (password !== decryptPassword) {
+      if (!isPasswordValid) {
         throw new Error("Email and Password do not match");
       }
 
@@ -136,11 +136,13 @@ export default {
         password,
       });
 
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       const user = await UserModel.create({
         fullName,
         username,
         email,
-        password,
+        password: hashedPassword,
         roles,
       });
       res.json({
