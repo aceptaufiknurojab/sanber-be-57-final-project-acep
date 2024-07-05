@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import ejs from 'ejs';
 import path from 'path';
 import { IOrder } from '@/models/order.model';
-import UserModel from '@/models/user.model'; // Import UserModel untuk mendapatkan detail pengguna
+import UserModel from '@/models/user.model';
 
 const transporter = nodemailer.createTransport({
     service: 'Zoho',
@@ -17,6 +17,11 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendInvoice = async (to: string, order: IOrder) => {
+    if (!to) {
+        console.error('Error sending invoice: No recipients defined');
+        return;
+    }
+
     try {
         const user = await UserModel.findById(order.createdBy);
         if (!user) {
@@ -28,8 +33,8 @@ export const sendInvoice = async (to: string, order: IOrder) => {
             customerName: user.username, // Gunakan user.username di sini
             orderItems: order.orderItems,
             grandTotal: order.grandTotal,
-            contactEmail: 'support@yourcompany.com',
-            companyName: 'Your Company',
+            contactEmail: 'aceptaufik08@zohomail.com',
+            companyName: 'PT. Alim Rugi',
             year: new Date().getFullYear(),
         });
 
@@ -45,3 +50,4 @@ export const sendInvoice = async (to: string, order: IOrder) => {
         console.error('Error sending invoice:', error);
     }
 };
+

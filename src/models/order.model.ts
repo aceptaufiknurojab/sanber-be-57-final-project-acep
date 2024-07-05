@@ -1,36 +1,58 @@
-import { Schema, model, models, Document } from 'mongoose';
+import { Schema, model, Document, models, Types } from 'mongoose';
 
 interface IOrder extends Document {
   grandTotal: number;
   orderItems: {
+    productId: Types.ObjectId;
     name: string;
-    productId: string;
     price: number;
     quantity: number;
   }[];
-  createdBy: string;
-  status: 'pending' | 'completed' | 'cancelled';
+  createdBy: Types.ObjectId;
+  status: string;
 }
 
-const orderSchema = new Schema({
-  grandTotal: { type: Number, required: true },
-  orderItems: [
-    {
-      name: { type: String, required: true },
-      productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
-      price: { type: Number, required: true },
-      quantity: { type: Number, required: true, min: 1, max: 5 },
-    },
-  ],
-  createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  status: {
-    type: String,
-    enum: ['pending', 'completed', 'cancelled'],
-    default: 'pending',
+const orderItemSchema = new Schema({
+  productId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true,
   },
-}, {
-  timestamps: true,
+  name: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+  },
 });
+
+const orderSchema = new Schema<IOrder>(
+  {
+    grandTotal: {
+      type: Number,
+      required: true,
+    },
+    orderItems: [orderItemSchema],
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    status: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const OrderModel = models.Order || model<IOrder>('Order', orderSchema);
 

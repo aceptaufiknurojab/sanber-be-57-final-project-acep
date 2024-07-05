@@ -8,41 +8,53 @@ export const createOrder = async (req: Request, res: Response) => {
   const user = (req as any).user;
 
   try {
-    let grandTotal = 0;
+      let grandTotal = 0;
 
-    for (const item of orderItems) {
-      const product = await ProductModel.findById(item.productId);
-      if (!product) {
-        return res.status(400).json({ message: `Product with ID ${item.productId} not found.` });
+      const updatedOrderItems = [];
+
+      for (const item of orderItems) {
+          const product = await ProductModel.findById(item.productId);
+          if (!product) {
+              return res.status(400).json({ message: `Product with ID ${item.productId} not found.` });
+          }
+          if (item.quantity > product.qty) {
+              return res.status(400).json({ message: `Insufficient stock for product ${product.name}.` });
+          }
+
+          const updatedItem = {
+              productId: item.productId,
+              name: product.name,
+              price: product.price,
+              quantity: item.quantity,
+          };
+
+          grandTotal += updatedItem.price * updatedItem.quantity;
+          updatedOrderItems.push(updatedItem);
       }
-      if (item.quantity > product.qty) {
-        return res.status(400).json({ message: `Insufficient stock for product ${item.name}.` });
+
+      const order = new OrderModel({
+          grandTotal,
+          orderItems: updatedOrderItems,
+          createdBy: user.id,
+          status: 'pending',
+      });
+
+      await order.save();
+
+      for (const item of updatedOrderItems) {
+          await ProductModel.findByIdAndUpdate(item.productId, { $inc: { qty: -item.quantity } });
       }
-      grandTotal += item.price * item.quantity;
-    }
 
-    const order = new OrderModel({
-      grandTotal,
-      orderItems,
-      createdBy: user.id,
-      status: 'pending'
-    });
+      if (user.email) {
+          await sendInvoice(user.email, order);
+      } else {
+          console.error('User email is not defined');
+      }
 
-    await order.save();
-
-    for (const item of orderItems) {
-      await ProductModel.findByIdAndUpdate(item.productId, { $inc: { qty: -item.quantity } });
-    }
-
-    await sendInvoice(user.email, order);
-
-    res.status(201).json(order);
+      res.status(201).json(order);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: 'Server error', error: error.message });
-    } else {
-      res.status(500).json({ message: 'Server error', error: String(error) });
-    }
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      res.status(500).json({ message: 'Server error', error: errorMessage });
   }
 };
 
@@ -65,10 +77,7 @@ export const getOrderHistory = async (req: Request, res: Response) => {
       orders,
     });
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: 'Server error', error: error.message });
-    } else {
-      res.status(500).json({ message: 'Server error', error: String(error) });
-    }
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    res.status(500).json({ message: errorMessage });
   }
 };

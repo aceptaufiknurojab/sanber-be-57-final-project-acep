@@ -1,5 +1,5 @@
+// src/routes.ts
 import express from "express";
-
 import uploadMiddleware from "./middlewares/upload.middleware";
 import uploadController from "./controllers/upload.controller";
 import productsController from "./controllers/products.controller";
@@ -25,7 +25,7 @@ router.delete("/categories/:id", categoryController.delete);
 
 router.post("/auth/login", authController.login);
 router.post("/auth/register", authController.register);
-router.get("/auth/me", [authMiddleware, aclMiddleware(["admin"])], authController.me); // Modified route
+router.get("/auth/me", [authMiddleware, aclMiddleware(["admin"])], authController.me);
 router.put("/auth/profile", authMiddleware, authController.profile);
 
 router.post("/upload", uploadMiddleware.single, uploadController.single);
